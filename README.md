@@ -4,12 +4,12 @@ This project is primarily a bridge between two distinct lines of work. Built on 
 
 Both papers and their GitHub are available at:
 
-DiffCR
+__DiffCR__
 
 Paper: https://arxiv.org/abs/2308.04417
 Code: https://github.com/XavierJiezou/DiffCR
 
-QHD-EO
+__QHD-EO__
 
 Paper: https://arxiv.org/abs/2512.20448
 Code: https://github.com/NesyaLab/Quantum-Hybrid-Diffusion-Models-for-EO
