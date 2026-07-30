@@ -20,7 +20,7 @@
                     "Sen2_MTC_New_Multi"
                 ],
                 "args": {
-                    "data_root": "/home/deejay/CTGAN_resized_subsampled/CTGAN/Sen2_MTC/dataset",
+                    "data_root": "data/CTGAN/Sen2_MTC/dataset",
                     "mode": "train"
                 }
             },
@@ -46,7 +46,7 @@
             "which_dataset": {
                 "name": "Sen2_MTC_New_Multi",
                 "args": {
-                    "data_root": "/home/deejay/CTGAN_resized_subsampled/CTGAN/Sen2_MTC/dataset",
+                    "data_root": "data/CTGAN/Sen2_MTC/dataset",
                     "mode": "val"
                 }
             }
@@ -55,7 +55,7 @@
             "which_dataset": {
                 "name": "Sen2_MTC_New_Multi",
                 "args": {
-                    "data_root": "/home/deejay/CTGAN_resized_subsampled/CTGAN/Sen2_MTC/dataset",
+                    "data_root": "data/CTGAN/Sen2_MTC/dataset",
                     "mode": "test"
                 }
             },

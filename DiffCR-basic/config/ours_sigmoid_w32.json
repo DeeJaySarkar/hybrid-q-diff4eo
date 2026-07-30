@@ -11,7 +11,7 @@
         "tb_logger": "tb_logger",
         "results": "results",
         "checkpoint": "checkpoint",
-        "resume_state": "experiments/train_ours_double_encoder_splitcaCond_splitcaUnet_sigmoid_w32_260610_071952/checkpoint/3000"
+        "resume_state": "None"
     },
     "datasets": {
         "train": {
@@ -21,7 +21,7 @@
                     "Sen2_MTC_New_Multi"
                 ],
                 "args": {
-                    "data_root": "/home/deejay/CTGAN_resized_subsampled/CTGAN/Sen2_MTC/dataset",
+                    "data_root": "data/CTGAN/Sen2_MTC/dataset",
                     "mode": "train"
                 }
             },
@@ -47,7 +47,7 @@
             "which_dataset": {
                 "name": "Sen2_MTC_New_Multi",
                 "args": {
-                    "data_root": "/home/deejay/CTGAN_resized_subsampled/CTGAN/Sen2_MTC/dataset",
+                    "data_root": "data/CTGAN/Sen2_MTC/dataset",
                     "mode": "val"
                 }
             }
@@ -56,7 +56,7 @@
             "which_dataset": {
                 "name": "Sen2_MTC_New_Multi",
                 "args": {
-                    "data_root": "/home/deejay/CTGAN_resized_subsampled/CTGAN/Sen2_MTC/dataset",
+                    "data_root": "data/CTGAN/Sen2_MTC/dataset",
                     "mode": "test"
                 }
             },
