@@ -1,6 +1,6 @@
 # QDiffCR: Quantum-Enhanced Diffusion Model for Cloud Removal
 
-A hybrid quantum-classical diffusion model for satellite image cloud removal. Extends [DiffCR](https://github.com/XavierJiezworkin/DiffCR) by inserting a parameterized quantum circuit (PQC) at the UNet bottleneck.
+A hybrid quantum-classical diffusion model for satellite image cloud removal. Extends [DiffCR](https://github.com/XavierJiezou/DiffCR) by inserting a parameterized quantum circuit (PQC) at the UNet bottleneck.
 
 ## Architecture
 
@@ -57,4 +57,4 @@ In `config/ours_sigmoid_w32_quantum.json`, the quantum layer is controlled by:
 
 ## Acknowledgements
 
-Based on [DiffCR](https://github.com/XavierJiezworkin/DiffCR).
+Based on [DiffCR](https://github.com/XavierJiezou/DiffCR).

@@ -2,7 +2,7 @@
 
 Classical DiffCR baseline — the unmodified architecture before quantum integration.
 
-Based on [DiffCR](https://github.com/XavierJiezworkin/DiffCR).
+Based on [DiffCR](https://github.com/XavierJiezou/DiffCR).
 
 ## Training
 
