@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Data files
+*.zip
+*.tar.gz
+*.h5
+*.hdf5
+*.tif
+*.tiff
+
+# Model weights
+*.pth
+*.pt
+*.ckpt
+
+# Experiment outputs
+experiments/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# PDFs (keep documentation in markdown)
+*.pdf
