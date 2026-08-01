@@ -118,7 +118,7 @@
                         "quantum": {
                             "enabled": true,
                             "mode": "hqconv_encoder",
-                            "encoder_stage": 2,
+                            "encoder_stage": 3,
                             "n_layers": 3
                         }
                     },
