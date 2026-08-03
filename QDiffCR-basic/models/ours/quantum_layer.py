@@ -19,9 +19,9 @@ class QuantumBottleneckLayer(nn.Module):
         self.pre_linear = nn.Linear(channels, n_qubits)
         self.post_linear = nn.Linear(n_qubits, channels)
 
-        dev = qml.device("lightning.gpu", wires=n_qubits)
+        dev = qml.device("default.qubit", wires=n_qubits)
 
-        @qml.qnode(dev, interface="torch", diff_method="adjoint")
+        @qml.qnode(dev, interface="torch", diff_method="backprop")
         def circuit(inputs, weights):
             qml.AngleEmbedding(inputs, wires=range(n_qubits), rotation="X")
             qml.BasicEntanglerLayers(weights, wires=range(n_qubits))
@@ -39,5 +39,39 @@ class QuantumBottleneckLayer(nn.Module):
         z = z.cpu()
         z = self.quantum_layer(z)
         z = z.to(device)
+        z = self.post_linear(z)
+        return residual + z.unsqueeze(-1).unsqueeze(-1)
+
+
+class ClassicalBottleneckLayer(nn.Module):
+    """Parameter-matched classical control for QuantumBottleneckLayer.
+
+    Same structure (pool -> linear -> block -> linear -> residual) but replaces
+    the PQC with a small MLP having >= equivalent parameters.
+    """
+
+    def __init__(self, channels, n_qubits=4, n_layers=2):
+        super().__init__()
+        self.n_qubits = n_qubits
+        self.n_layers = n_layers
+
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.pre_linear = nn.Linear(channels, n_qubits)
+        self.post_linear = nn.Linear(n_qubits, channels)
+
+        hidden = max(n_qubits, n_layers * n_qubits)
+        self.block = nn.Sequential(
+            nn.Linear(n_qubits, hidden),
+            nn.Tanh(),
+            nn.Linear(hidden, n_qubits),
+            nn.Tanh(),
+        )
+
+    def forward(self, x):
+        residual = x
+        z = self.pool(x).flatten(1)
+        z = self.pre_linear(z)
+        z = torch.tanh(z) * torch.pi
+        z = self.block(z)
         z = self.post_linear(z)
         return residual + z.unsqueeze(-1).unsqueeze(-1)
