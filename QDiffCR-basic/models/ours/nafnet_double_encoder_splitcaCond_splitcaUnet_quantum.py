@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from functools import partial
 import math
 from abc import abstractmethod
-from .quantum_layer import QuantumBottleneckLayer
+from .quantum_layer import QuantumBottleneckLayer, ClassicalBottleneckLayer, QuantumMatchedLayer
 
 
 class EmbedBlock(nn.Module):
@@ -212,7 +212,13 @@ class UNet(nn.Module):
         if q_cfg.get("enabled", True):
             n_qubits = q_cfg.get("n_qubits", 4)
             n_layers = q_cfg.get("n_layers", 2)
-            self.quantum_bottleneck = QuantumBottleneckLayer(chan, n_qubits=n_qubits, n_layers=n_layers)
+            mode = q_cfg.get("mode", "global")
+            if mode == "classical_control":
+                self.quantum_bottleneck = ClassicalBottleneckLayer(chan, n_qubits=n_qubits, n_layers=n_layers)
+            elif mode == "quantum_matched":
+                self.quantum_bottleneck = QuantumMatchedLayer(chan, n_qubits=q_cfg.get("n_qubits", 5), n_layers=q_cfg.get("n_layers", 5))
+            else:
+                self.quantum_bottleneck = QuantumBottleneckLayer(chan, n_qubits=n_qubits, n_layers=n_layers)
         else:
             self.quantum_bottleneck = None
 
