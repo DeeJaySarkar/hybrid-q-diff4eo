@@ -75,3 +75,44 @@ class ClassicalBottleneckLayer(nn.Module):
         z = self.block(z)
         z = self.post_linear(z)
         return residual + z.unsqueeze(-1).unsqueeze(-1)
+
+
+
+class QuantumMatchedLayer(nn.Module):
+    """5-qubit quantum bottleneck using StronglyEntanglingLayers (75 params).
+
+    Matches the classical control's parameter count while using a richer
+    quantum ansatz with full 3-rotation gates and all-to-all CNOT entanglement.
+    """
+
+    def __init__(self, channels, n_qubits=5, n_layers=5):
+        super().__init__()
+        self.n_qubits = n_qubits
+        self.n_layers = n_layers
+
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.pre_linear = nn.Linear(channels, n_qubits)
+        self.post_linear = nn.Linear(n_qubits, channels)
+
+        dev = qml.device("default.qubit", wires=n_qubits)
+
+        @qml.qnode(dev, interface="torch", diff_method="backprop")
+        def circuit(inputs, weights):
+            qml.AngleEmbedding(inputs, wires=range(n_qubits), rotation="X")
+            qml.StronglyEntanglingLayers(weights, wires=range(n_qubits))
+            return [qml.expval(qml.PauliZ(i)) for i in range(n_qubits)]
+
+        weight_shapes = {"weights": (n_layers, n_qubits, 3)}
+        self.quantum_layer = qml.qnn.TorchLayer(circuit, weight_shapes)
+
+    def forward(self, x):
+        residual = x
+        device = x.device
+        z = self.pool(x).flatten(1)
+        z = self.pre_linear(z)
+        z = torch.tanh(z) * torch.pi
+        z = z.cpu()
+        z = self.quantum_layer(z)
+        z = z.to(device)
+        z = self.post_linear(z)
+        return residual + z.unsqueeze(-1).unsqueeze(-1)
