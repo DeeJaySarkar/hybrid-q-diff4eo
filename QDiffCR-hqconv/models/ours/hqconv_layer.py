@@ -124,3 +124,49 @@ class HQConvQuanvLayer(nn.Module):
         # Project back to full channel count
         out = self.post_conv(out)
         return residual + out
+
+
+class ClassicalSpatialControl(nn.Module):
+    """Parameter-matched classical control for HQConvQuanvLayer.
+
+    Identical structure: pre_conv -> extract 2×2 patches -> process -> fold back -> post_conv -> residual.
+    But replaces the quantum circuit with a classical MLP having >= 84 params (8->16->8, Tanh).
+    This isolates whether the quantum circuit contributes vs just spatial patch processing.
+    """
+
+    def __init__(self, channels, n_qubits=8, n_layers=3, quantum_channels=2):
+        super().__init__()
+        self.n_qubits = n_qubits
+        self.quantum_channels = quantum_channels
+
+        self.pre_conv = nn.Conv2d(channels, quantum_channels, kernel_size=1)
+        self.post_conv = nn.Conv2d(quantum_channels, channels, kernel_size=1)
+
+        # Classical MLP replacing quantum circuit: 8->16->8 with Tanh
+        # Params: 8*16 + 16 + 16*8 + 8 = 280 (deliberately > 84 quantum params)
+        self.patch_mlp = nn.Sequential(
+            nn.Linear(n_qubits, 16),
+            nn.Tanh(),
+            nn.Linear(16, n_qubits),
+            nn.Tanh(),
+        )
+
+    def forward(self, x):
+        import torch.nn.functional as F
+        residual = x
+        B, C, H, W = x.shape
+
+        z = self.pre_conv(x)
+        patches = F.unfold(z, kernel_size=2, stride=2)
+        n_patches = patches.shape[2]
+
+        patches = patches.permute(0, 2, 1).reshape(-1, self.n_qubits)
+        patches = torch.tanh(patches) * 3.14159
+
+        out = self.patch_mlp(patches)
+
+        out = out.view(B, n_patches, self.quantum_channels * 4).permute(0, 2, 1)
+        out = F.fold(out, output_size=(H, W), kernel_size=2, stride=2)
+
+        out = self.post_conv(out)
+        return residual + out
