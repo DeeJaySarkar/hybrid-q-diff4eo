@@ -5,7 +5,7 @@ from functools import partial
 import math
 from abc import abstractmethod
 from .quantum_layer import QuantumBottleneckLayer, ClassicalBottleneckLayer, QuantumMatchedLayer
-from .hqconv_layer import HQConvQuanvLayer
+from .hqconv_layer import HQConvQuanvLayer, ClassicalSpatialControl
 
 
 class EmbedBlock(nn.Module):
@@ -221,6 +221,11 @@ class UNet(nn.Module):
             elif mode == "hqconv_bottleneck":
                 # HQConv spatial quanvolution at the bottleneck (4×4 at 64×64 input = 4 patches)
                 self.quantum_bottleneck = HQConvQuanvLayer(
+                    channels=chan, n_qubits=8, n_layers=q_cfg.get("n_layers", 3),
+                    quantum_channels=2)
+            elif mode == "spatial_control_bottleneck":
+                # Classical spatial filter control — same patch structure, classical MLP
+                self.quantum_bottleneck = ClassicalSpatialControl(
                     channels=chan, n_qubits=8, n_layers=q_cfg.get("n_layers", 3),
                     quantum_channels=2)
             elif mode == "hqconv_encoder":
